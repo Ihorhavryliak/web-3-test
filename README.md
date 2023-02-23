@@ -19,7 +19,7 @@ To get started with the Message App, follow these steps:
 
 ## Run
 1. Run  by running `npm run dev` in the project directory 
-2. Go to Front-end repo:  [front-end repo](https://github.com/Ihorhavryliak/web-3-web). (If you do not clone and install Front-end repo)
+2. Go to Front-end repo:  [front-end repo](https://github.com/Ihorhavryliak/Web-3-web). (If you do not clone and install Front-end repo)
 #
 # Features
 Simple web server with a GET endpoint
