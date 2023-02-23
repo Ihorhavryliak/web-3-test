@@ -1,6 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import axios from 'axios';
-import Web3 from 'web3';
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import axios from "axios";
+import Web3 from "web3";
+import { writeFileSync } from "fs";
+import fs from "fs";
 
 @Injectable()
 export class BalanceService {
@@ -10,35 +12,190 @@ export class BalanceService {
     this.web3 = new Web3(`${process.env.ETH_NODE_URL}`);
   }
 
-  async getBalances(address: string) {
-    console.log(this.web3.eth, 'this.web3.eth')
-    const balance = await this.web3.eth.getBalance(address);
-    console.log(balance, balance)
-    const tokens = await this.getTokens(address);
-    return {
-      balance,
-      tokens,
-    };
+  async runIntervalBalance(addressWallet: string) {
+    setInterval(async () => {
+      this.getBalancesForInterval(addressWallet);
+    }, 60 * 1000);
   }
 
-  async getTokens(address: string) {
-    const response = await axios.get('https://api.coingecko.com/api/v3/coins/list');
-    const tokens = response.data.filter((coin: any) => coin.platforms?.ethereum);
-    const contractAddresses = tokens.map((token: any) => token.platforms.ethereum);
-    const tokenBalances = await Promise.all(contractAddresses.map(async (address: string) => {
-      const contract = new this.web3.eth.Contract([{
-        "constant": true,
-        "inputs": [{"name": "_owner", "type": "address"}],
-        "name": "balanceOf",
-        "outputs": [{"name": "balance", "type": "uint256"}],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-      },
-    ], address);
-      const balance = await contract.methods.balanceOf(address).call();
-      return { address, balance };
-    }));
-    return tokenBalances.filter((token: any) => Number(token.balance) > 0);
+  async getBalances(addressWallet: string) {
+    const address = addressWallet.toLocaleLowerCase();
+    try {
+      //get Total
+      const response = await axios.get(
+        `${process.env.URL_API_COINGECKO}coins/ethereum`
+      );
+
+      // access the "total_supply" and "circulating_supply" fields
+      const totalSupply = response.data.market_data.total_supply;
+
+      //balance
+      const balance = await this.web3.eth.getBalance(address);
+
+      //get all tokens on wallet
+      const allTokens = await this.getTransactionsByAccount(address);
+
+      //count
+      const tokenCount = await this.web3.eth.getTransactionCount(address);
+      //create object for json file
+      const allBalanceData = {
+        address,
+        tokenCount,
+        balance: +balance / 1e18,
+        allTokens,
+      };
+
+      // data json
+      const now = new Date().toISOString();
+      const data = { ...allBalanceData, createdAt: now };
+      const jsonData = JSON.stringify(data /* , null, 2 */);
+
+      //create directory
+      if (!fs.existsSync(`${__dirname}/files`)) {
+        fs.mkdirSync(`${__dirname}/files`, { recursive: true });
+      }
+
+      //save file
+      writeFileSync(`${__dirname}/files/config.json`, jsonData);
+
+      await this.runIntervalBalance(address);
+      return {
+        totalSupply,
+        tokenCount,
+        balance: +balance / 1e18,
+        allTokens,
+      };
+    } catch (error) {
+      console.log(error);
+      throw new HttpException({ error }, HttpStatus.TOO_MANY_REQUESTS);
+    }
+  }
+
+  async getTransactionsByAccount(
+    myAccount: string,
+    startBlockNumber = 0,
+    endBlockNumber = null
+  ) {
+    try {
+      /*  if (endBlockNumber === null) { */
+      endBlockNumber = await this.web3.eth.getBlockNumber();
+      /*    } */
+      /*   if (startBlockNumber === null) {
+      startBlockNumber = endBlockNumber - 1000;
+    } */
+
+      //console.log(myAccount);
+      let number = 0;
+      //console.log(number, "<--count", endBlockNumber);
+
+      const tokens = [];
+      //console.log(tokens, "!!tokens!!!");
+
+      for (let i = startBlockNumber; i <= endBlockNumber; i++) {
+        let block = await this.web3.eth.getBlock(i, true);
+        number = number + 1;
+        console.log(number);
+        if (block !== null && block.transactions !== null) {
+          block.transactions.forEach((transaction) => {
+            console.log(transaction, "<1<<<<");
+
+            if (
+              myAccount === "*" ||
+              (transaction.from &&
+                myAccount === transaction.from.toLowerCase()) ||
+              (transaction.to && myAccount === transaction.to.toLowerCase())
+            ) {
+              console.log(transaction, "<1");
+              tokens.push(transaction);
+            }
+          });
+        }
+      }
+      return tokens;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getBalancesForInterval(addressWallet: string) {
+    const address = addressWallet.toLocaleLowerCase();
+    try {
+      //get Total
+      const response = await axios.get(
+        `${process.env.URL_API_COINGECKO}coins/ethereum`
+      );
+
+      // access the "total_supply" and "circulating_supply" fields
+      const totalSupply = response.data.market_data.total_supply;
+
+      //balance
+      const balance = await this.web3.eth.getBalance(address);
+
+      //get all tokens on wallet
+      const allTokens = await this.getTransactionsByAccount(address);
+
+      //count
+      const tokenCount = await this.web3.eth.getTransactionCount(address);
+      //create object for json file
+      const allBalanceData = {
+        address,
+        tokenCount,
+        balance: +balance / 1e18,
+        allTokens,
+      };
+
+      // data json
+      const now = new Date().toISOString();
+      const data = { ...allBalanceData, createdAt: now };
+      const jsonData = JSON.stringify(data /* , null, 2 */);
+
+      //create directory
+      if (!fs.existsSync(`${__dirname}/files`)) {
+        fs.mkdirSync(`${__dirname}/files`, { recursive: true });
+      }
+
+      //save file
+      writeFileSync(`${__dirname}/files/config.json`, jsonData);
+
+      return {
+        totalSupply,
+        tokenCount,
+        balance: +balance / 1e18,
+        allTokens,
+      };
+    } catch (error) {
+      console.log(error);
+      throw new HttpException({ error }, HttpStatus.TOO_MANY_REQUESTS);
+    }
+  }
+
+  //get main data
+  async getTotal(addressWallet: string) {
+    const address = addressWallet.toLocaleLowerCase();
+    try {
+      //get Total
+      const response = await axios.get(
+        `${process.env.URL_API_COINGECKO}coins/ethereum`
+      );
+
+      // access the "total_supply" and "circulating_supply" fields
+      const totalSupply = response.data.market_data.total_supply;
+
+      //balance
+      const balance = await this.web3.eth.getBalance(address);
+
+      //count
+      const tokenCount = await this.web3.eth.getTransactionCount(address);
+      //create object for json file
+
+      return {
+        totalSupply,
+        tokenCount,
+        balance: +balance / 1e18,
+      };
+    } catch (error) {
+      console.log(error);
+      throw new HttpException({ error }, HttpStatus.TOO_MANY_REQUESTS);
+    }
   }
 }

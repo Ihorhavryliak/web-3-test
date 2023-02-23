@@ -952,6 +952,13 @@
     "jsonc-parser" "3.2.0"
     "pluralize" "8.0.0"
 
+"@nestjs/serve-static@^3.0.1":
+  "integrity" "sha512-i766UJPYOqvQ2BbRKh0/+Mmq5NkJnmKcShjWV1i5qpXyeM0KDZTn0n7g7ykWq/3LbQgjpMzrhYtGv35GX7GVQw=="
+  "resolved" "https://registry.npmjs.org/@nestjs/serve-static/-/serve-static-3.0.1.tgz"
+  "version" "3.0.1"
+  dependencies:
+    "path-to-regexp" "0.2.5"
+
 "@nestjs/testing@^9.0.0":
   "integrity" "sha512-+mPvSVvSC2SAkYgZZv1mOI2xsdGc1pmq7/sem7iin/JDoFtlvoGSK+pfZHD3IV3EpYtq1v/8/5gi+UFH9yZnDg=="
   "resolved" "https://registry.npmjs.org/@nestjs/testing/-/testing-9.3.9.tgz"
@@ -2207,6 +2214,11 @@
   "resolved" "https://registry.npmjs.org/co/-/co-4.6.0.tgz"
   "version" "4.6.0"
 
+"coingecko-api@^1.0.10":
+  "integrity" "sha512-7YLLC85+daxAw5QlBWoHVBVpJRwoPr4HtwanCr8V/WRjoyHTa1Lb9DQAvv4MDJZHiz4no6HGnDQnddtjV35oRA=="
+  "resolved" "https://registry.npmjs.org/coingecko-api/-/coingecko-api-1.0.10.tgz"
+  "version" "1.0.10"
+
 "collect-v8-coverage@^1.0.0":
   "integrity" "sha512-iBPtljfCNcTKNAto0KEtDfZ3qzjJvqE3aTGZsbhjSBlorqpXJlaWWtPO35D+ZImoC3KWejX64o+yPGxhWSTzfg=="
   "resolved" "https://registry.npmjs.org/collect-v8-coverage/-/collect-v8-coverage-1.0.1.tgz"
@@ -2958,7 +2970,7 @@
     "jest-message-util" "^29.4.3"
     "jest-util" "^29.4.3"
 
-"express@^4.14.0", "express@4.18.2":
+"express@^4.14.0", "express@^4.18.1", "express@4.18.2":
   "integrity" "sha512-5/PsL6iGPdfQ/lKM1UuielYgv3BUoJfz1aUwU9vHZ+J7gyvwdQXFEBIEIaxeGf0GIcreATNyBExtalisDbuMqQ=="
   "resolved" "https://registry.npmjs.org/express/-/express-4.18.2.tgz"
   "version" "4.18.2"
@@ -4975,6 +4987,11 @@
   "integrity" "sha512-5DFkuoqlv1uYQKxy8omFBeJPQcdoE07Kv2sferDCrAq1ohOU+MSDswDIbnx3YAM60qIOnYa53wBhXW0EbMonrQ=="
   "resolved" "https://registry.npmjs.org/path-to-regexp/-/path-to-regexp-0.1.7.tgz"
   "version" "0.1.7"
+
+"path-to-regexp@0.2.5":
+  "integrity" "sha512-l6qtdDPIkmAmzEO6egquYDfqQGPMRNGjYtrU13HAXb3YSRrt7HSb1sJY0pKp6o2bAa86tSB6iwaW2JbthPKr7Q=="
+  "resolved" "https://registry.npmjs.org/path-to-regexp/-/path-to-regexp-0.2.5.tgz"
+  "version" "0.2.5"
 
 "path-to-regexp@3.2.0":
   "integrity" "sha512-jczvQbCUS7XmS7o+y1aEO9OBVFeZBQ1MDSEqmO7xSoPgOPoowY/SxLpZ6Vh97/8qHZOteiCKb7gkG9gA2ZUxJA=="

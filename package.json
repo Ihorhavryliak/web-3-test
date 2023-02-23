@@ -24,6 +24,8 @@
     "@nestjs/config": "^2.3.1",
     "@nestjs/core": "^9.3.9",
     "@nestjs/platform-express": "^9.0.0",
+    "@nestjs/serve-static": "^3.0.1",
+    "coingecko-api": "^1.0.10",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
     "web3": "^1.8.2"
