@@ -71,41 +71,24 @@ export class BalanceService {
     }
   }
 
-  async getTransactionsByAccount(
-    myAccount: string,
-    startBlockNumber = 0,
-    endBlockNumber = null
-  ) {
+  async getTransactionsByAccount(myAccount: string) {
     try {
-      /*  if (endBlockNumber === null) { */
-      endBlockNumber = await this.web3.eth.getBlockNumber();
-      /*    } */
-      /*   if (startBlockNumber === null) {
-      startBlockNumber = endBlockNumber - 1000;
-    } */
-
-      //console.log(myAccount);
+      const startBlockNumber = 0;
+      const endBlockNumber = await this.web3.eth.getBlockNumber();
       let number = 0;
-      //console.log(number, "<--count", endBlockNumber);
-
       const tokens = [];
-      //console.log(tokens, "!!tokens!!!");
 
       for (let i = startBlockNumber; i <= endBlockNumber; i++) {
         let block = await this.web3.eth.getBlock(i, true);
         number = number + 1;
-        console.log(number);
         if (block !== null && block.transactions !== null) {
           block.transactions.forEach((transaction) => {
-            console.log(transaction, "<1<<<<");
-
             if (
               myAccount === "*" ||
               (transaction.from &&
                 myAccount === transaction.from.toLowerCase()) ||
               (transaction.to && myAccount === transaction.to.toLowerCase())
             ) {
-              console.log(transaction, "<1");
               tokens.push(transaction);
             }
           });
